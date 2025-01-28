@@ -22,6 +22,7 @@ class InfluencersViewSet(viewsets.ModelViewSet):
         count = request.query_params.get('count', 5)
         do_not_repeat = request.query_params.get('do_not_repeat')
         research = request.query_params.get('research')
+        timeframe = request.query_params.get('timeframe', 'latest')
 
         if not research:
             return response.Response(data={'error': 'Research ID is required'}, status=400)
@@ -37,7 +38,7 @@ class InfluencersViewSet(viewsets.ModelViewSet):
 
         # retrieve health claims
         for influencer in resp:
-            health_flow = HealthClaimsFlow(key, influencer, journals, comment, model=model)
+            health_flow = HealthClaimsFlow(key, influencer, journals, comment, model=model, timeframe=timeframe)
             health_resp = health_flow.discover_health_claims()
             influencer['health_claims'] = health_resp
             ## overall trust score of influencer (avg)
@@ -107,6 +108,7 @@ class InfluencersViewSet(viewsets.ModelViewSet):
         influencer = request.query_params.get('influencer')
         count = request.query_params.get('count', 5)
         research_id = request.query_params.get('research')
+        timeframe = request.query_params.get('timeframe', 'latest')
 
         if not research_id:
             return response.Response(data={'error': 'Research ID is required'}, status=400)
@@ -121,7 +123,7 @@ class InfluencersViewSet(viewsets.ModelViewSet):
         resp = flow.check_influencer()
 
         # retrieve health claims
-        health_flow = HealthClaimsFlow(key, influencer, count=count, model=model)
+        health_flow = HealthClaimsFlow(key, influencer, count=count, model=model, timeframe=timeframe)
         health_resp = health_flow.discover_health_claims()
         resp['health_claims'] = health_resp
         ## overall trust score of influencer (avg)

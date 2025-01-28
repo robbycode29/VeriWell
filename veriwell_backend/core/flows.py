@@ -119,13 +119,14 @@ class HealthClaimsFlow(Flow):
     Manages the interaction flow to retrieve health claims for an influencer
     """
 
-    def __init__(self, key, influencer, journals=None, comment=None, count=5, model="sonar"):
+    def __init__(self, key, influencer, journals=None, comment=None, count=5, model="sonar", timeframe="latest"):
         super().__init__(key)
         self.model = model
         self.influencer = influencer
         self.journals = journals or ["any", "Pubmed Central", "Nature", "Science", "Cell", "The Lancet", "New England Journal of Medicine", "JAMA"]
         self.comment = comment
         self.count = count
+        self.timeframe = timeframe
         self.payload = {
             "model": f"{self.model}",
             "messages": [
@@ -135,6 +136,7 @@ class HealthClaimsFlow(Flow):
                     "Please output a JSON list of objects with the following keys: "
                     "claim, category, evidence (links to research papers if exists else []; must have word match), counter_evidence (links to research papers if exists else []; must have word match), date (yyyy-mm-dd)."
                     f"Evidence and counter evidence should come from the following trusted scientific journals: {', '.join(self.journals)}."
+                    f"Timeframe: {self.timeframe}. Now: {datetime.now().strftime('%Y-%m-%d')}."
                     f"Notes for research assistant: {self.comment}"
                     "Do not include any other text in the response."
                     "Return a valid raw JSON response."
