@@ -7,6 +7,7 @@ class Influencer(BaseModel):
     name: str
     bio: str
     followers: int
+    profile_picture: str
 
 
 class Flow:
@@ -39,7 +40,7 @@ class InfluencerFlow(Flow):
                 {"role": "user", "content": (
                     f"Find information about the influencer {influencer}."
                     "Please output a JSON object with the following keys: "
-                    "name, bio (detailed), followers (int)."
+                    "name, bio (detailed), followers (int), profile_picture (link)."
                     "Do not include any other text in the response."
                     "Return a valid raw JSON response."
                 )},
@@ -79,7 +80,7 @@ class InfluencersFlow(Flow):
                     "Find top influencers in the health industry."
                     "Top influencers are those with the most followers."
                     f"Please output a JSON list of objects with the following keys: "
-                    "name, bio (detailed), followers (int)."
+                    "name, bio (detailed), followers (int), profile_picture (link)."
                     "Do not include any other text in the response."
                     "Return a valid raw JSON response."
                     f"Return exactly {self.count} influencers."

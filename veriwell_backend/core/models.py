@@ -36,6 +36,7 @@ class ClaimResearch(Research):
 
 class Influencer(models.Model):
     name = models.CharField(max_length=255)
+    profile_picture = models.URLField(null=True, blank=True)
     bio = models.TextField(null=True, blank=True)
     followers = models.IntegerField(null=True, blank=True)
     trust_score = models.FloatField(null=True, blank=True)

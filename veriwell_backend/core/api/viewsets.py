@@ -49,7 +49,7 @@ class InfluencersViewSet(viewsets.ModelViewSet):
             if influencer_obj:
                 influencer_obj = influencer_obj.first()
             if not influencer_obj:
-                influencer_obj = Influencer.objects.create(name=influencer.get('name'), bio=influencer.get('bio'), followers=influencer.get('followers'), trust_score=influencer.get('trust_score'))
+                influencer_obj = Influencer.objects.create(name=influencer.get('name'), bio=influencer.get('bio'), followers=influencer.get('followers'), trust_score=influencer.get('trust_score'), profile_picture=influencer.get('profile_picture'))
             research.influencers.add(influencer_obj)
 
             for claim in influencer.get('health_claims'):
@@ -132,7 +132,7 @@ class InfluencersViewSet(viewsets.ModelViewSet):
         if influencer_obj:
             influencer_obj = influencer_obj.first()
         if not influencer_obj:
-            influencer_obj = Influencer.objects.create(name=resp.get('name'), bio=resp.get('bio'), followers=resp.get('followers'), trust_score=resp.get('trust_score'))
+            influencer_obj = Influencer.objects.create(name=resp.get('name'), bio=resp.get('bio'), followers=resp.get('followers'), trust_score=resp.get('trust_score'), profile_picture=resp.get('profile_picture'))
         research.influencer = influencer_obj
         research.save()
 
