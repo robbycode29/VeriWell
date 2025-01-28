@@ -11,7 +11,7 @@ class InfluencersViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def check_bulk_influencers(self, request):
         key = request.query_params.get('key')
-        model = request.query_params.get('model')
+        model = request.query_params.get('model', 'sonar')
         journals = request.query_params.get('journals')
         comment = request.query_params.get('comment')
 
@@ -32,7 +32,7 @@ class InfluencersViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def check_influencer(self, request):
         key = request.query_params.get('key')
-        model = request.query_params.get('model')
+        model = request.query_params.get('model', 'sonar')
         influencer = request.query_params.get('influencer')
         max_claims = request.query_params.get('max_claims')
         min_claims = request.query_params.get('min_claims')
@@ -42,7 +42,7 @@ class InfluencersViewSet(viewsets.ModelViewSet):
         resp = flow.check_influencer()
 
         # retrieve health claims
-        health_flow = HealthClaimsFlow(key, influencer, model=model, max_claims=max_claims, min_claims=min_claims)
+        health_flow = HealthClaimsFlow(key, influencer, max_claims=max_claims, min_claims=min_claims, model=model)
         health_resp = health_flow.discover_health_claims()
         resp['health_claims'] = health_resp
         ## overall trust score of influencer (avg)
@@ -54,7 +54,7 @@ class InfluencersViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def check_claim(self, request):
         key = request.query_params.get('key')
-        model = request.query_params.get('model')
+        model = request.query_params.get('model', 'sonar')
         claim = request.query_params.get('claim')
         journals = request.query_params.get('journals')
 
