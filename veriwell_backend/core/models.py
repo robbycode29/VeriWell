@@ -36,20 +36,26 @@ class ClaimResearch(Research):
 
 class Influencer(models.Model):
     name = models.CharField(max_length=255)
-    bio = models.TextField()
-    followers = models.IntegerField()
-    trust_score = models.FloatField()
+    bio = models.TextField(null=True, blank=True)
+    followers = models.IntegerField(null=True, blank=True)
+    trust_score = models.FloatField(null=True, blank=True)
+
+    def __str__(self):
+        return self.name
 
 
 class Claim(models.Model):
     influencer = models.ForeignKey(Influencer, related_name='claims', on_delete=models.CASCADE)
     claim = models.TextField()
-    category = models.CharField(max_length=255)
+    category = models.CharField(max_length=255, null=True, blank=True)
     date = models.DateField(null=True, blank=True)
-    trust_score = models.FloatField()
-    status = models.CharField(max_length=50)
-    evidence = models.ManyToManyField('ResearchPaper', related_name='evidence_claims')
-    counter_evidence = models.ManyToManyField('ResearchPaper', related_name='counter_evidence_claims')
+    trust_score = models.FloatField(null=True, blank=True)
+    status = models.CharField(max_length=50, null=True, blank=True)
+    evidence = models.ManyToManyField('ResearchPaper', related_name='evidence_claims', blank=True)
+    counter_evidence = models.ManyToManyField('ResearchPaper', related_name='counter_evidence_claims', blank=True)
+
+    def __str__(self):
+        return self.claim
 
 
 class ResearchPaper(models.Model):
@@ -57,3 +63,6 @@ class ResearchPaper(models.Model):
     link = models.URLField()
     journal = models.CharField(max_length=255, null=True, blank=True)
     date = models.DateField(null=True, blank=True)
+
+    def __str__(self):
+        return self.title

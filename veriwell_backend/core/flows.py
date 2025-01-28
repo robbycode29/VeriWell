@@ -118,14 +118,13 @@ class HealthClaimsFlow(Flow):
     Manages the interaction flow to retrieve health claims for an influencer
     """
 
-    def __init__(self, key, influencer, journals=None, comment=None, max_claims=5, min_claims=1, model="sonar"):
+    def __init__(self, key, influencer, journals=None, comment=None, count=5, model="sonar"):
         super().__init__(key)
         self.model = model
         self.influencer = influencer
         self.journals = journals or ["any", "Pubmed Central", "Nature", "Science", "Cell", "The Lancet", "New England Journal of Medicine", "JAMA"]
         self.comment = comment
-        self.max_claims = max_claims
-        self.min_claims = min_claims
+        self.count = count
         self.payload = {
             "model": f"{self.model}",
             "messages": [
@@ -138,8 +137,7 @@ class HealthClaimsFlow(Flow):
                     f"Notes for research assistant: {self.comment}"
                     "Do not include any other text in the response."
                     "Return a valid raw JSON response."
-                    f"Return a maximum of {self.max_claims} health claims."
-                    f"Return a minimum of {self.min_claims} health claims."
+                    f"Return exactly {self.count} health claims."
                 )},
             ],
             "response_format": {
