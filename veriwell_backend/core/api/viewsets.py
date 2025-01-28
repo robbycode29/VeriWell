@@ -5,13 +5,17 @@ from rest_framework import response
 from core.flows import InfluencerFlow, InfluencersFlow, HealthClaimsFlow, SingleClaimFlow
 from core.models import BulkResearch, SingleResearch, ClaimResearch, Influencer, Claim, ResearchPaper
 from core.utils import are_strings_similar
+from django.conf import settings
+
+
+DEFAULT_PERPLEXITY_KEY = settings.PERPLEXITY_API_KEY
 
 
 class InfluencersViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['post'])
     def check_bulk(self, request):
-        key = request.query_params.get('key')
+        key = request.query_params.get('key', DEFAULT_PERPLEXITY_KEY)
         model = request.query_params.get('model', 'sonar')
         journals = request.query_params.get('journals')
         comment = request.query_params.get('comment')
@@ -98,7 +102,7 @@ class InfluencersViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['post'])
     def check_influencer(self, request):
-        key = request.query_params.get('key')
+        key = request.query_params.get('key', DEFAULT_PERPLEXITY_KEY)
         model = request.query_params.get('model', 'sonar')
         influencer = request.query_params.get('influencer')
         count = request.query_params.get('count', 5)
@@ -182,7 +186,7 @@ class InfluencersViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['post'])
     def check_claim(self, request):
-        key = request.query_params.get('key')
+        key = request.query_params.get('key', DEFAULT_PERPLEXITY_KEY)
         model = request.query_params.get('model', 'sonar')
         claim = request.query_params.get('claim')
         journals = request.query_params.get('journals')

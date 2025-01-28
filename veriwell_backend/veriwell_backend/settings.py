@@ -33,6 +33,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# Perplexity API key
+PERPLEXITY_API_KEY = os.getenv('PERPLEXITY_API_KEY')
 
 ## Database vars
 POSTGRES_DB = os.getenv('POSTGRES_DB')
