@@ -1,10 +1,14 @@
 from datetime import datetime
+
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework import response
+from core.api.serializers import InfluencerSerializer, ClaimSerializer
+
 from core.flows import InfluencerFlow, InfluencersFlow, HealthClaimsFlow, SingleClaimFlow
 from core.models import BulkResearch, SingleResearch, ClaimResearch, Influencer, Claim, ResearchPaper
 from core.utils import are_strings_similar
+
 from django.conf import settings
 
 
@@ -12,6 +16,14 @@ DEFAULT_PERPLEXITY_KEY = settings.PERPLEXITY_API_KEY
 
 
 class InfluencersViewSet(viewsets.ModelViewSet):
+    queryset = Influencer.objects.all()
+    serializer_class = InfluencerSerializer
+
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
 
     @action(detail=False, methods=['post'])
     def check_bulk(self, request):
@@ -267,4 +279,18 @@ class InfluencersViewSet(viewsets.ModelViewSet):
             return response.Response(data={'error': 'Invalid research type'})
 
 
+class ClaimsViewSet(viewsets.ModelViewSet):
+    serializer_class = ClaimSerializer
+
+    def get_queryset(self):
+        influencer_name = self.request.query_params.get('influencer_name') or self.request.data.get('influencer_name')
+        if influencer_name:
+            return Claim.objects.filter(influencer__name=influencer_name)
+        return Claim.objects.all()
+
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
 
