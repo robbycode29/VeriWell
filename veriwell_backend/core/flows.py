@@ -66,9 +66,11 @@ class InfluencersFlow(Flow):
     Manages the interaction flow to retrieve influencers
     """
 
-    def __init__(self, key, model="sonar"):
+    def __init__(self, key, model="sonar", count=5, do_not_repeat=None):
         super().__init__(key)
         self.model = model
+        self.count = count
+        self.do_not_repeat = do_not_repeat
         self.payload = {
             "model": f"{self.model}",
             "messages": [
@@ -80,7 +82,8 @@ class InfluencersFlow(Flow):
                     "name, bio (detailed), followers (int)."
                     "Do not include any other text in the response."
                     "Return a valid raw JSON response."
-                    "Return a maximum of 5 influencers."
+                    f"Return exactly {self.count} influencers."
+                    f"Do not repeat influencers: {', '.join(self.do_not_repeat) if do_not_repeat else ''}."
                 )},
             ],
             "response_format": {
