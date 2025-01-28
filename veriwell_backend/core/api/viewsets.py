@@ -3,7 +3,7 @@ from rest_framework.decorators import action
 
 from rest_framework import response
 
-from core.flows import InfluencerFlow, InfluencersFlow, HealthClaimsFlow
+from core.flows import InfluencerFlow, InfluencersFlow, HealthClaimsFlow, SingleClaimFlow
 
 
 class InfluencersViewSet(viewsets.ModelViewSet):
@@ -24,7 +24,7 @@ class InfluencersViewSet(viewsets.ModelViewSet):
             health_resp = health_flow.discover_health_claims()
             influencer['health_claims'] = health_resp
             ## overall trust score of influencer (avg)
-            influencer['trust_score'] = sum([claim['trust_score'] for claim in health_resp]) / len(health_resp)
+            influencer['trust_score'] = round(sum([claim['trust_score'] for claim in health_resp]) / len(health_resp), 2)
 
         return response.Response(data=resp)
 
@@ -44,7 +44,20 @@ class InfluencersViewSet(viewsets.ModelViewSet):
         health_resp = health_flow.discover_health_claims()
         resp['health_claims'] = health_resp
         ## overall trust score of influencer (avg)
-        resp['trust_score'] = sum([claim['trust_score'] for claim in health_resp]) / len(health_resp)
+        resp['trust_score'] = round(sum([claim['trust_score'] for claim in health_resp]) / len(health_resp), 2)
 
         return response.Response(data=resp)
+
+
+    @action(detail=False, methods=['get'])
+    def check_claim(self, request):
+        key = request.query_params.get('key')
+        claim = request.query_params.get('claim')
+        journals = request.query_params.get('journals')
+
+        # validate the claim
+        flow = SingleClaimFlow(key, claim, journals)
+        validation_result = flow.validate_claim()
+
+        return response.Response(data=validation_result)
 
