@@ -28,11 +28,12 @@ class InfluencerFlow(Flow):
     Manages the interaction flow to retrieve an influencer
     """
 
-    def __init__(self, key, influencer):
+    def __init__(self, key, influencer, model="sonar"):
         super().__init__(key)
+        self.model = model
         self.influencer = influencer
         self.payload = {
-            "model": "sonar",
+            "model": f"{self.model}",
             "messages": [
                 {"role": "system", "content": "Be precise and concise."},
                 {"role": "user", "content": (
@@ -65,10 +66,11 @@ class InfluencersFlow(Flow):
     Manages the interaction flow to retrieve influencers
     """
 
-    def __init__(self, key):
+    def __init__(self, key, model="sonar"):
         super().__init__(key)
+        self.model = model
         self.payload = {
-            "model": "sonar",
+            "model": f"{self.model}",
             "messages": [
                 {"role": "system", "content": "Be precise and concise."},
                 {"role": "user", "content": (
@@ -113,15 +115,16 @@ class HealthClaimsFlow(Flow):
     Manages the interaction flow to retrieve health claims for an influencer
     """
 
-    def __init__(self, key, influencer, journals=None, comment=None, max_claims=5, min_claims=1):
+    def __init__(self, key, influencer, journals=None, comment=None, max_claims=5, min_claims=1, model="sonar"):
         super().__init__(key)
+        self.model = model
         self.influencer = influencer
         self.journals = journals or ["any", "Pubmed Central", "Nature", "Science", "Cell", "The Lancet", "New England Journal of Medicine", "JAMA"]
         self.comment = comment
         self.max_claims = max_claims
         self.min_claims = min_claims
         self.payload = {
-            "model": "sonar",
+            "model": f"{self.model}",
             "messages": [
                 {"role": "system", "content": "Be precise and concise. Search references thoroughly"},
                 {"role": "user", "content": (
@@ -176,12 +179,13 @@ class ResearchPapersFlow(Flow):
     Manages the interaction flow to retrieve research papers and validate/invalidate a claim
     """
 
-    def __init__(self, key, claim, journals=None):
+    def __init__(self, key, claim, journals=None, model="sonar"):
         super().__init__(key)
+        self.model = model
         self.claim = claim
         self.journals = journals or ["any", "Pubmed Central", "Nature", "Science", "Cell", "The Lancet", "New England Journal of Medicine", "JAMA"]
         self.payload = {
-            "model": "sonar",
+            "model": f"{self.model}",
             "messages": [
                 {"role": "system", "content": "Be precise and concise. Search references thoroughly"},
                 {"role": "user", "content": (
@@ -253,12 +257,13 @@ class SingleClaimFlow(Flow):
     Manages the interaction flow to validate a single claim
     """
 
-    def __init__(self, key, claim, journals=None):
+    def __init__(self, key, claim, journals=None, model="sonar",):
         super().__init__(key)
+        self.model = model
         self.claim = claim
         self.journals = journals or ["any", "Pubmed Central", "Nature", "Science", "Cell", "The Lancet", "New England Journal of Medicine", "JAMA"]
         self.payload = {
-            "model": "sonar",
+            "model": f"{self.model}",
             "messages": [
                 {"role": "system", "content": "Be precise and concise. Search references thoroughly"},
                 {"role": "user", "content": (

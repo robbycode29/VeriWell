@@ -9,18 +9,19 @@ from core.flows import InfluencerFlow, InfluencersFlow, HealthClaimsFlow, Single
 class InfluencersViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'])
-    def new(self, request):
+    def check_bulk_influencers(self, request):
         key = request.query_params.get('key')
+        model = request.query_params.get('model')
         journals = request.query_params.get('journals')
         comment = request.query_params.get('comment')
 
         # retrieve new influencers
-        flow = InfluencersFlow(key)
+        flow = InfluencersFlow(key, model=model)
         resp = flow.discover_influencers()
 
         # retrieve health claims
         for influencer in resp:
-            health_flow = HealthClaimsFlow(key, influencer, journals, comment)
+            health_flow = HealthClaimsFlow(key, influencer, journals, comment, model=model)
             health_resp = health_flow.discover_health_claims()
             influencer['health_claims'] = health_resp
             ## overall trust score of influencer (avg)
@@ -31,16 +32,17 @@ class InfluencersViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def check_influencer(self, request):
         key = request.query_params.get('key')
+        model = request.query_params.get('model')
         influencer = request.query_params.get('influencer')
         max_claims = request.query_params.get('max_claims')
         min_claims = request.query_params.get('min_claims')
 
         # retrieve influencer
-        flow = InfluencerFlow(key, influencer)
+        flow = InfluencerFlow(key, influencer, model=model)
         resp = flow.check_influencer()
 
         # retrieve health claims
-        health_flow = HealthClaimsFlow(key, influencer, max_claims=max_claims, min_claims=min_claims)
+        health_flow = HealthClaimsFlow(key, influencer, model=model, max_claims=max_claims, min_claims=min_claims)
         health_resp = health_flow.discover_health_claims()
         resp['health_claims'] = health_resp
         ## overall trust score of influencer (avg)
@@ -52,11 +54,12 @@ class InfluencersViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def check_claim(self, request):
         key = request.query_params.get('key')
+        model = request.query_params.get('model')
         claim = request.query_params.get('claim')
         journals = request.query_params.get('journals')
 
         # validate the claim
-        flow = SingleClaimFlow(key, claim, journals)
+        flow = SingleClaimFlow(key, claim, journals, model=model)
         validation_result = flow.validate_claim()
 
         return response.Response(data=validation_result)
