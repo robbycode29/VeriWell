@@ -70,7 +70,7 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8080",
-    "https://veriwell.vercel.app/",
+    # "https://veriwell.vercel.app/",
 ]
 
 ROOT_URLCONF = 'veriwell_backend.urls'
