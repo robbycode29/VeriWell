@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
-# import dj_database_url
+import dj_database_url
 
 # Load environment variables from .env file
 load_dotenv()
@@ -31,7 +31,7 @@ SECRET_KEY = 'django-insecure-s3oet%=0&n2jb$e_mq++txc9!1$v0pxhk048jam%72g0_ukt8c
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['veriwell-63c21104cb44.herokuapp.com', 'localhost']
 
 # Perplexity API key
 PERPLEXITY_API_KEY = os.getenv('PERPLEXITY_API_KEY')
@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'core'
 ]
 
@@ -64,6 +65,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:8080",
+    "https://veriwell.vercel.app/",
 ]
 
 ROOT_URLCONF = 'veriwell_backend.urls'
@@ -91,19 +98,19 @@ WSGI_APPLICATION = 'veriwell_backend.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 ## Local
-DATABASES = {
-    'default': {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": POSTGRES_DB,
-        "USER": POSTGRES_USER,
-        "PASSWORD": POSTGRES_PASSWORD,
-        "HOST": POSTGRES_HOST,
-        "PORT": POSTGRES_PORT,
-    }
-}
 # DATABASES = {
-#     'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
+#     'default': {
+#         "ENGINE": "django.db.backends.postgresql",
+#         "NAME": POSTGRES_DB,
+#         "USER": POSTGRES_USER,
+#         "PASSWORD": POSTGRES_PASSWORD,
+#         "HOST": POSTGRES_HOST,
+#         "PORT": POSTGRES_PORT,
+#     }
 # }
+DATABASES = {
+    'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
+}
 
 
 # Password validation
