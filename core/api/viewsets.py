@@ -63,6 +63,7 @@ class InfluencersViewSet(viewsets.ModelViewSet):
         resp = flow.discover_influencers()
 
         if isinstance(resp, response.Response):
+            research.failed = True
             return resp
 
         # retrieve health claims
@@ -70,6 +71,7 @@ class InfluencersViewSet(viewsets.ModelViewSet):
             health_flow = HealthClaimsFlow(key, influencer, journals, comment, model=model, timeframe=timeframe)
             health_resp = health_flow.discover_health_claims()
             if isinstance(health_resp, response.Response):
+                research.failed = True
                 return health_resp
             influencer['health_claims'] = health_resp
             ## overall trust score of influencer (avg)
@@ -161,12 +163,14 @@ class InfluencersViewSet(viewsets.ModelViewSet):
         resp = flow.check_influencer()
 
         if isinstance(resp, response.Response):
+            research.failed = True
             return resp
 
         # retrieve health claims
         health_flow = HealthClaimsFlow(key, influencer, count=count, model=model, timeframe=timeframe)
         health_resp = health_flow.discover_health_claims()
         if isinstance(health_resp, response.Response):
+            research.failed = True
             return health_resp
         resp['health_claims'] = health_resp
         ## overall trust score of influencer (avg)
@@ -242,12 +246,23 @@ class InfluencersViewSet(viewsets.ModelViewSet):
         model = request.query_params.get('model', 'sonar')
         claim = request.query_params.get('claim')
         journals = request.query_params.get('journals')
+        research_id = request.query_params.get('research')
+
+        if not research_id:
+            return response.Response(data={'error': 'Research ID is required'}, status=400)
+
+        try:
+            research = ClaimResearch.objects.get(id=research_id)
+        except ClaimResearch.DoesNotExist:
+            return response.Response(data={'error': 'Research ID is invalid'}, status=400)
+
 
         # validate the claim
         flow = SingleClaimFlow(key, claim, journals, model=model)
         validation_result = flow.validate_claim()
 
         if isinstance(validation_result, response.Response):
+            research.failed = True
             return validation_result
 
         # Create or get the Default influencer
@@ -293,11 +308,12 @@ class InfluencersViewSet(viewsets.ModelViewSet):
         claim_obj.evidence.set(evidence_list)
         claim_obj.counter_evidence.set(counter_evidence_list)
 
-        # Create and associate ClaimResearch with the claim
-        claim_research = ClaimResearch.objects.create(claim=claim_obj)
-
         # Update validation_result with serializable research papers
         validation_result['research_papers'] = research_papers
+
+        # Create and associate ClaimResearch with the claim
+        research.claim = claim_obj
+        research.save()
 
         return response.Response(status=200, data={'success': 'Claim checked successfully'})
 

@@ -17,21 +17,21 @@ class ClaimSerializer(serializers.ModelSerializer):
 class BulkResearchSerializer(serializers.ModelSerializer):
     class Meta:
         model = BulkResearch
-        fields = ['id', 'influencers', 'created_at', 'updated_at']
+        fields = ['id', 'influencers', 'failed', 'created_at', 'updated_at']
         depth = 1
 
 
 class SingleResearchSerializer(serializers.ModelSerializer):
     class Meta:
         model = SingleResearch
-        fields = ['id', 'influencer', 'created_at', 'updated_at']
+        fields = ['id', 'influencer', 'failed', 'created_at', 'updated_at']
         depth = 1
 
 
 class ClaimResearchSerializer(serializers.ModelSerializer):
     class Meta:
         model = ClaimResearch
-        fields = ['id', 'claim', 'created_at', 'updated_at']
+        fields = ['id', 'claim', 'failed', 'created_at', 'updated_at']
         depth = 2
 
 

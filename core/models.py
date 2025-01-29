@@ -9,6 +9,7 @@ class AnalysisType(models.TextChoices):
 
 class Research(models.Model):
     analysis_type = models.CharField(max_length=255, choices=AnalysisType.choices, null=True, blank=True)
+    failed = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
