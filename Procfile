@@ -1,1 +1,1 @@
-web: gunicorn bot.wsgi --timeout 0
+web: gunicorn veriwell_backend.wsgi --timeout 0
