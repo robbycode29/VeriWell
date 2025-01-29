@@ -28,6 +28,9 @@ class InfluencersViewSet(viewsets.ModelViewSet):
         if category:
             queryset = queryset.filter(category__icontains=category)
 
+        # sort by ranking
+        queryset = queryset.order_by('-trust_score')
+
         return queryset
 
     def list(self, request, *args, **kwargs):
@@ -323,11 +326,19 @@ class ClaimsViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         influencer_name = self.request.query_params.get('influencer_name')
         category = self.request.query_params.get('category')
-        if influencer_name and category:
-            return Claim.objects.filter(influencer__name=influencer_name, category=category)
+        sort_by = self.request.query_params.get('sort_by')
+
+        queryset = Claim.objects.all()
+
         if influencer_name:
-            return Claim.objects.filter(influencer__name=influencer_name)
-        return Claim.objects.first()
+            queryset = queryset.filter(influencer__name=influencer_name)
+        if category:
+            queryset = queryset.filter(category__icontains=category)
+
+        if sort_by in ['date', 'trust_score']:
+            queryset = queryset.order_by(sort_by)
+
+        return queryset
 
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
