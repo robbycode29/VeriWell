@@ -335,6 +335,11 @@ class InfluencersViewSet(viewsets.ModelViewSet):
         else:
             return response.Response(data={'error': 'Invalid research type'})
 
+    @action(detail=False, methods=['get'])
+    def categories(self, request):
+        categories = Influencer.objects.values_list('category', flat=True).distinct()
+        return response.Response(categories)
+
 
 class ClaimsViewSet(viewsets.ModelViewSet):
     serializer_class = ClaimSerializer
