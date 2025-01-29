@@ -1,11 +1,13 @@
 from core.perplexity import Perplexity
 from pydantic import BaseModel
 from datetime import datetime
+from rest_framework import response as rest_response
 
 
 class Influencer(BaseModel):
     name: str
     bio: str
+    category: str
     followers: int
     profile_picture: str
 
@@ -40,7 +42,7 @@ class InfluencerFlow(Flow):
                 {"role": "user", "content": (
                     f"Find information about the influencer {influencer}."
                     "Please output a JSON object with the following keys: "
-                    "name, bio (detailed), followers (int), profile_picture (link)."
+                    "name, bio (detailed), category (subdomain of health), followers (int), profile_picture (link if exists else '')."
                     "Do not include any other text in the response."
                     "Return a valid raw JSON response."
                 )},
@@ -80,7 +82,7 @@ class InfluencersFlow(Flow):
                     "Find top influencers in the health industry."
                     "Top influencers are those with the most followers."
                     f"Please output a JSON list of objects with the following keys: "
-                    "name, bio (detailed), followers (int), profile_picture (link)."
+                    "name, bio (detailed), category (subdomain of health), followers (int), profile_picture (link if exists else '')."
                     "Do not include any other text in the response."
                     "Return a valid raw JSON response."
                     f"Return exactly {self.count} influencers."
@@ -154,6 +156,8 @@ class HealthClaimsFlow(Flow):
         Discover health claims for an influencer
         """
         response = self.perplexity.ask(self.payload)
+        if isinstance(response, rest_response.Response):
+            return response
         health_claims = [self.validate_claim(claim) for claim in response]
         return health_claims
 

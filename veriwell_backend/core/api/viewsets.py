@@ -16,8 +16,19 @@ DEFAULT_PERPLEXITY_KEY = settings.PERPLEXITY_API_KEY
 
 
 class InfluencersViewSet(viewsets.ModelViewSet):
-    queryset = Influencer.objects.all()
     serializer_class = InfluencerSerializer
+
+    def get_queryset(self):
+        queryset = Influencer.objects.all()
+        influencer_name = self.request.query_params.get('influencer_name')
+        category = self.request.query_params.get('category')
+
+        if influencer_name:
+            queryset = queryset.filter(influencer__name=influencer_name)
+        if category:
+            queryset = queryset.filter(category__icontains=category)
+
+        return queryset
 
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
@@ -48,10 +59,15 @@ class InfluencersViewSet(viewsets.ModelViewSet):
         flow = InfluencersFlow(key, model=model, count=count, do_not_repeat=do_not_repeat)
         resp = flow.discover_influencers()
 
+        if isinstance(resp, response.Response):
+            return resp
+
         # retrieve health claims
         for influencer in resp:
             health_flow = HealthClaimsFlow(key, influencer, journals, comment, model=model, timeframe=timeframe)
             health_resp = health_flow.discover_health_claims()
+            if isinstance(health_resp, response.Response):
+                return health_resp
             influencer['health_claims'] = health_resp
             ## overall trust score of influencer (avg)
             influencer['trust_score'] = round(sum([claim['trust_score'] for claim in health_resp]) / len(health_resp), 2)
@@ -62,7 +78,14 @@ class InfluencersViewSet(viewsets.ModelViewSet):
             if influencer_obj:
                 influencer_obj = influencer_obj.first()
             if not influencer_obj:
-                influencer_obj = Influencer.objects.create(name=influencer.get('name'), bio=influencer.get('bio'), followers=influencer.get('followers'), trust_score=influencer.get('trust_score'), profile_picture=influencer.get('profile_picture'))
+                influencer_obj = Influencer.objects.create(
+                    name=influencer.get('name'),
+                    bio=influencer.get('bio'),
+                    followers=influencer.get('followers'),
+                    trust_score=influencer.get('trust_score'),
+                    profile_picture=influencer.get('profile_picture'),
+                    category=influencer.get('category')
+                )
             research.influencers.add(influencer_obj)
 
             for claim in influencer.get('health_claims'):
@@ -134,9 +157,14 @@ class InfluencersViewSet(viewsets.ModelViewSet):
         flow = InfluencerFlow(key, influencer, model=model)
         resp = flow.check_influencer()
 
+        if isinstance(resp, response.Response):
+            return resp
+
         # retrieve health claims
         health_flow = HealthClaimsFlow(key, influencer, count=count, model=model, timeframe=timeframe)
         health_resp = health_flow.discover_health_claims()
+        if isinstance(health_resp, response.Response):
+            return health_resp
         resp['health_claims'] = health_resp
         ## overall trust score of influencer (avg)
         resp['trust_score'] = round(sum([claim['trust_score'] for claim in health_resp]) / len(health_resp), 2)
@@ -146,7 +174,14 @@ class InfluencersViewSet(viewsets.ModelViewSet):
         if influencer_obj:
             influencer_obj = influencer_obj.first()
         if not influencer_obj:
-            influencer_obj = Influencer.objects.create(name=resp.get('name'), bio=resp.get('bio'), followers=resp.get('followers'), trust_score=resp.get('trust_score'), profile_picture=resp.get('profile_picture'))
+            influencer_obj = Influencer.objects.create(
+                name=resp.get('name'),
+                bio=resp.get('bio'),
+                followers=resp.get('followers'),
+                trust_score=resp.get('trust_score'),
+                profile_picture=resp.get('profile_picture'),
+                category = resp.get('category')
+            )
         research.influencer = influencer_obj
         research.save()
 
@@ -208,6 +243,9 @@ class InfluencersViewSet(viewsets.ModelViewSet):
         # validate the claim
         flow = SingleClaimFlow(key, claim, journals, model=model)
         validation_result = flow.validate_claim()
+
+        if isinstance(validation_result, response.Response):
+            return validation_result
 
         # Create or get the Default influencer
         default_influencer, created = Influencer.objects.get_or_create(name="Default")
@@ -283,10 +321,13 @@ class ClaimsViewSet(viewsets.ModelViewSet):
     serializer_class = ClaimSerializer
 
     def get_queryset(self):
-        influencer_name = self.request.query_params.get('influencer_name') or self.request.data.get('influencer_name')
+        influencer_name = self.request.query_params.get('influencer_name')
+        category = self.request.query_params.get('category')
+        if influencer_name and category:
+            return Claim.objects.filter(influencer__name=influencer_name, category=category)
         if influencer_name:
             return Claim.objects.filter(influencer__name=influencer_name)
-        return Claim.objects.all()
+        return Claim.objects.first()
 
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
@@ -294,3 +335,7 @@ class ClaimsViewSet(viewsets.ModelViewSet):
     def retrieve(self, request, *args, **kwargs):
         return super().retrieve(request, *args, **kwargs)
 
+    @action(detail=False, methods=['get'])
+    def categories(self, request):
+        categories = Claim.objects.values_list('category', flat=True).distinct()
+        return response.Response(categories)

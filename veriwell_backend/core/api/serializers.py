@@ -4,7 +4,7 @@ from core.models import Influencer, Claim
 class InfluencerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Influencer
-        fields = ['id', 'name', 'profile_picture', 'bio', 'followers', 'trust_score']
+        fields = ['id', 'name', 'category', 'profile_picture', 'bio', 'followers', 'trust_score']
 
 
 class ClaimSerializer(serializers.ModelSerializer):

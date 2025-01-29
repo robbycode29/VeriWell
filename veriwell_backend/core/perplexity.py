@@ -1,5 +1,8 @@
+from json import JSONDecodeError
+
 import requests
 import json
+from rest_framework import response
 
 
 class Perplexity:
@@ -15,10 +18,15 @@ class Perplexity:
         """
         Ask a question to the Perplexity API
         """
-        response = requests.post(self.url, headers=self.headers, json=payload, verify=False)
-        response = response.json()
-        response = response.get("choices")[0].get("message").get("content")
-        response = response.replace('```json\n', '').replace('```', '').replace('\n', '').replace('    ', '')
-        response = json.loads(response)
+        try:
+            resp = requests.post(self.url, headers=self.headers, json=payload, verify=False)
+            resp = resp.json()
+            resp = resp.get("choices")[0].get("message").get("content")
+            resp = resp.replace('```json\n', '').replace('```', '').replace('\n', '').replace('    ', '')
+            resp = json.loads(resp)
+        except JSONDecodeError:
+            resp = response.Response(data={"error": "Invalid response from Perplexity API"}, status=500)
+        except TypeError:
+            resp = response.Response(data={"error": "Invalid response from Perplexity API"}, status=500)
 
-        return response
+        return resp
