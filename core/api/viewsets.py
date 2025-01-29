@@ -3,7 +3,7 @@ from datetime import datetime
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework import response
-from core.api.serializers import InfluencerSerializer, ClaimSerializer
+from core.api.serializers import InfluencerSerializer, ClaimSerializer, BulkResearchSerializer, SingleResearchSerializer, ClaimResearchSerializer
 
 from core.flows import InfluencerFlow, InfluencersFlow, HealthClaimsFlow, SingleClaimFlow
 from core.models import BulkResearch, SingleResearch, ClaimResearch, Influencer, Claim, ResearchPaper
@@ -350,3 +350,34 @@ class ClaimsViewSet(viewsets.ModelViewSet):
     def categories(self, request):
         categories = Claim.objects.values_list('category', flat=True).distinct()
         return response.Response(categories)
+
+
+class BulkResearchViewSet(viewsets.ModelViewSet):
+    serializer_class = BulkResearchSerializer
+
+    def get_queryset(self):
+        return BulkResearch.objects.all()
+
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+
+class SingleResearchViewSet(viewsets.ModelViewSet):
+    serializer_class = SingleResearchSerializer
+
+    def get_queryset(self):
+        return SingleResearch.objects.all()
+
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+
+class ClaimResearchViewSet(viewsets.ModelViewSet):
+    serializer_class = ClaimResearchSerializer
+
+    def get_queryset(self):
+        return ClaimResearch.objects.all()
+
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
