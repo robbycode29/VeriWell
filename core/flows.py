@@ -108,6 +108,7 @@ class InfluencersFlow(Flow):
 
 class HealthClaim(BaseModel):
     claim: str
+    link: str
     category: str
     evidence: list[str]
     counter_evidence: list[str]
@@ -136,7 +137,7 @@ class HealthClaimsFlow(Flow):
                 {"role": "user", "content": (
                     f"Find latest health claims for the influencer {influencer}."
                     "Please output a JSON list of objects with the following keys: "
-                    "claim, category, evidence (links to research papers if exists else []; must have word match), counter_evidence (links to research papers if exists else []; must have word match), date (yyyy-mm-dd)."
+                    "claim, source (link to claim source), category, evidence (links to research papers if exists else []; must have word match), counter_evidence (links to research papers if exists else []; must have word match), date (yyyy-mm-dd)."
                     f"Evidence and counter evidence should come from the following trusted scientific journals: {', '.join(self.journals)}."
                     f"Timeframe: {self.timeframe}. Now: {datetime.now().strftime('%Y-%m-%d')}."
                     f"Notes for research assistant: {self.comment}"

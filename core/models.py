@@ -50,6 +50,7 @@ class Influencer(models.Model):
 class Claim(models.Model):
     influencer = models.ForeignKey(Influencer, related_name='claims', on_delete=models.CASCADE)
     claim = models.TextField()
+    source = models.URLField(null=True, blank=True)
     category = models.CharField(max_length=255, null=True, blank=True)
     date = models.DateField(null=True, blank=True)
     trust_score = models.FloatField(null=True, blank=True)

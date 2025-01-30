@@ -27,7 +27,7 @@ class InfluencerSerializer(serializers.ModelSerializer):
 class ClaimSerializer(serializers.ModelSerializer):
     class Meta:
         model = Claim
-        fields = ['id', 'influencer', 'claim', 'category', 'date', 'trust_score', 'status', 'evidence', 'counter_evidence']
+        fields = ['id', 'influencer', 'claim', 'source', 'category', 'date', 'trust_score', 'status', 'evidence', 'counter_evidence']
         depth = 1
 
 

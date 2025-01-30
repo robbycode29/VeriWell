@@ -112,7 +112,7 @@ class InfluencersViewSet(viewsets.ModelViewSet):
                 except ValueError:
                     claim['date'] = None
 
-                claim_obj = Claim.objects.create(influencer=influencer_obj, claim=claim.get('claim'), category=claim.get('category'), date=claim.get('date'), trust_score=claim.get('trust_score'), status=claim.get('status'))
+                claim_obj = Claim.objects.create(influencer=influencer_obj, claim=claim.get('claim'), source=claim.get('source'), category=claim.get('category'), date=claim.get('date'), trust_score=claim.get('trust_score'), status=claim.get('status'))
                 research_papers = claim.get('research_papers')
                 for paper in research_papers:
                     date = paper.get('date')
@@ -211,7 +211,7 @@ class InfluencersViewSet(viewsets.ModelViewSet):
             except ValueError:
                 claim['date'] = None
 
-            claim_obj = Claim.objects.create(influencer=influencer_obj, claim=claim.get('claim'), category=claim.get('category'), date=claim.get('date'), trust_score=claim.get('trust_score'), status=claim.get('status'))
+            claim_obj = Claim.objects.create(influencer=influencer_obj, claim=claim.get('claim'), source=claim.get('source'), category=claim.get('category'), date=claim.get('date'), trust_score=claim.get('trust_score'), status=claim.get('status'))
             research_papers = claim.get('research_papers')
             for paper in research_papers:
                 date = paper.get('date')
