@@ -66,11 +66,12 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8080",
-    # "https://veriwell.vercel.app/",
+    "https://veriwell.vercel.app",
 ]
 
 ROOT_URLCONF = 'veriwell_backend.urls'
