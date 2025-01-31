@@ -64,6 +64,7 @@ class InfluencersViewSet(viewsets.ModelViewSet):
 
         if isinstance(resp, response.Response):
             research.failed = True
+            research.save()
             return resp
 
         # retrieve health claims
@@ -72,6 +73,7 @@ class InfluencersViewSet(viewsets.ModelViewSet):
             health_resp = health_flow.discover_health_claims()
             if isinstance(health_resp, response.Response):
                 research.failed = True
+                research.save()
                 return health_resp
             influencer['health_claims'] = health_resp
             ## overall trust score of influencer (avg)
@@ -148,6 +150,8 @@ class InfluencersViewSet(viewsets.ModelViewSet):
         influencer = request.query_params.get('influencer')
         count = request.query_params.get('count', 5)
         research_id = request.query_params.get('research')
+        journals = request.query_params.get('journals')
+        comment = request.query_params.get('comment')
         timeframe = request.query_params.get('timeframe', 'latest')
 
         if not research_id:
@@ -164,13 +168,15 @@ class InfluencersViewSet(viewsets.ModelViewSet):
 
         if isinstance(resp, response.Response):
             research.failed = True
+            research.save()
             return resp
 
         # retrieve health claims
-        health_flow = HealthClaimsFlow(key, influencer, count=count, model=model, timeframe=timeframe)
+        health_flow = HealthClaimsFlow(key, influencer, journals=journals, comment=comment, count=count, model=model, timeframe=timeframe)
         health_resp = health_flow.discover_health_claims()
         if isinstance(health_resp, response.Response):
             research.failed = True
+            research.save()
             return health_resp
         resp['health_claims'] = health_resp
         ## overall trust score of influencer (avg)
@@ -263,6 +269,7 @@ class InfluencersViewSet(viewsets.ModelViewSet):
 
         if isinstance(validation_result, response.Response):
             research.failed = True
+            research.save()
             return validation_result
 
         # Create or get the Default influencer
